@@ -1,5 +1,9 @@
 package com.hngc.run;
 
+import com.hngc.dao.UserDao;
+import com.hngc.dao.UserDaoImpl;
+import com.hngc.pojo.User;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -99,6 +103,31 @@ public class LoginView extends JFrame implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e)
     {
+        String email = emailJTextField.getText();
+        char[] passwordCharArray = pwdJPwdField.getPassword();
+        String pwd = String.valueOf(passwordCharArray);
 
+        if (e.getSource().equals(loginButton))
+        {
+            UserDao userDao = new UserDaoImpl();
+
+            User user = userDao.login(email, pwd);
+            if (user != null)
+            {
+                JOptionPane.showMessageDialog(null,"欢迎\t" + user.getUsername() + "来到天天酷跑小游戏");
+
+                this.dispose();
+
+                new ChooseView();
+            }
+        }
+        else if (e.getSource().equals(loginButton))
+        {
+            JOptionPane.showMessageDialog(null, "登陆失败，请检查用户名和密码~");
+        }
+        else
+        {
+            System.exit(0);
+        }
     }
 }
