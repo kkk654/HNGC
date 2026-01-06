@@ -6,9 +6,12 @@ public class GameView extends JFrame
 {
     public static int WIDTH = 1000;
     public static int HEIGHT = 550;
+    private static GameView gameView;
 
     public GameView()
     {
+        // 将当前实例赋值给静态变量gameView
+        gameView = this;
 
         //创建GameMainPanel对象
         GameMainPanel gameMainPanel = new GameMainPanel();
@@ -39,6 +42,14 @@ public class GameView extends JFrame
         
         //请求游戏面板获取焦点
         gameMainPanel.requestFocusInWindow();
+    }
+
+    public static void diestory()
+    {
+        if (gameView != null)
+        {
+            gameView.dispose();
+        }
     }
 
 }

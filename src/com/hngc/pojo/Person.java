@@ -206,7 +206,8 @@ public class Person implements Serializable
         // 确保speed不为0，避免除以零错误
         int safeSpeed = Math.max(1, speed);
         // 确保personBufferedImage数组不为空，避免模运算除以零错误
-        if (personBufferedImage.length > 0) {
+        if (personBufferedImage.length > 0)
+        {
             personImage = personBufferedImage[personIndex++ / safeSpeed % personBufferedImage.length];
         }
     }
@@ -283,5 +284,19 @@ public class Person implements Serializable
         }
     }
 
+    //人物扣血方法
+    public void reduceHealth(int damage)
+    {
+        //减少角色的生命值
+        this.health -= damage;
+        //如果生命值小于等于0,则角色死亡
+        if (this.health <= 0)
+        {
+            this.health = 0;
+            //设置角色的死亡状态为true
+            this.setDie(true);
+        }
+
+    }
 
 }

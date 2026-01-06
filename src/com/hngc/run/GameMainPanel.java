@@ -1,5 +1,7 @@
 package com.hngc.run;
 
+import com.hngc.pojo.Bomb;
+import com.hngc.pojo.Gold;
 import com.hngc.pojo.Person;
 
 import javax.imageio.ImageIO;
@@ -11,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 public class GameMainPanel extends JPanel implements KeyListener
 {
@@ -39,9 +42,22 @@ public class GameMainPanel extends JPanel implements KeyListener
 
     //暂停游戏图片
     Image stopImage = null;
+
     //停止变量
     boolean stop;
+    java.util.List<Gold> goldList = new java.util.LinkedList<Gold>();
 
+    //控制游戏金币位置的变量
+    int goldIndex = 0;
+
+    //炸弹列表
+    java.util.List<Bomb> bombList = new java.util.LinkedList<Bomb>();
+
+    //定义控制炸弹位置的变量
+    int bombIndex = 0;
+
+    //炸弹变大的变量
+    int level = 1;
 
     //游戏主面板
     public GameMainPanel()
@@ -94,7 +110,6 @@ public class GameMainPanel extends JPanel implements KeyListener
                     person.setY(person.getY() + person.getSpeed());
                 }
 
-
                 //重新绘制界面
                 repaint();
             }
@@ -128,7 +143,7 @@ public class GameMainPanel extends JPanel implements KeyListener
         //设置字体
         g.setFont(new Font("微软雅黑", Font.PLAIN, 15));
         //绘制文本
-        g.drawString("您当前的分数 : 999 分", 140, 80);
+        g.drawString("您当前的分数 : " + person.getScore(), 140, 80);
 
         //绘制游戏角色
         person.step();
@@ -148,6 +163,118 @@ public class GameMainPanel extends JPanel implements KeyListener
         if (stop)
         {
             g.drawImage(stopImage, 0, 0, 76, 78, null);
+        }
+        //绘制金币
+        //创建金币的实体类
+        Gold gold = new Gold();
+        //判断是否需要添加新的金币到列表中
+        if (goldIndex++ % gold.getNewGoldTime() == 0)
+        {
+            //添加金币对象
+            goldList.add(gold);
+        }
+        //绘制金币
+        //增强for循环
+        for (Gold gold2 : goldList)
+        {
+            //遍历金币列表，调用金币对象的goldPaint方法绘制金币
+            gold2.goldPaint(g);
+            //调用gold对象的step方法，使金币移动
+            gold2.step();
+        }
+
+        //创建列表的迭代器
+        Iterator<Gold> goldIterator = goldList.iterator();
+        //检查迭代器中是否有下一个金币对象
+        //hasNext方法判断迭代器中是否有下一个元素
+        while (goldIterator.hasNext())
+        {
+            //获取下一个金币对象
+            Gold golds = (Gold) goldIterator.next();
+            //判断角色是否和金币发生碰撞（角色的右边界大于金币的左边界）
+            if (person.getX() + person.getWidth() > golds.getX()
+                //判断左边界是否小于金币的右边界
+                && person.getX() < golds.getX() + golds.getWidth()
+                //检查角色的底部是否高于金币的顶部
+                && person.getY() + person.getHeight() > golds.getY()
+                //检查角色的顶部是否低于金币的底部
+                && person.getY() < golds.getY() + golds.getHeight())
+            {
+                //如果角色与金币发生碰撞，则移除金币对象
+                goldIterator.remove();
+                //增加角色的分数，分数增长的值为当前金币的价格
+                person.setScore(person.getScore() + gold.getGoldPrice());
+                //判断玩家的得分是否是100的倍数
+                if (person.getScore() % 100 == 0)
+                {
+                    //提升游戏困难等级
+                    level++;
+                }
+            }
+            //判断金币是否超出屏幕左侧范围
+            if (golds.getX() <= -golds.getWidth())
+            {
+                //如果金币超出范围，打印金币移除信息
+                System.out.println("清理金币" + golds);
+                //移除金币对象
+                goldIterator.remove();
+            }
+        }
+
+
+        //绘制炸弹
+        //创建炸弹的实体类
+        Bomb bomb = new Bomb(level);
+        //判断bombIndex是否满足创建新炸弹的条件
+        //如果说bombIndex递增后和爆炸事件取余为0，表示创建炸弹
+        if (bombIndex++ % bomb.getBombTime() == 0)
+        {
+            //将新的炸弹对象添加到炸弹列表中
+            bombList.add(bomb);
+        }
+        //遍历炸弹列表中每一个炸弹
+        //增强for循环
+        for (Bomb bomb2 : bombList)
+        {
+            //调用bombRepaint方法，将炸弹绘制到窗口中
+            bomb2.bombRepaint(g);
+            //调用step方法，更新炸弹位置
+            bomb2.step();
+        }
+
+        //创建炸弹的迭代器
+        Iterator<Bomb> iterator = bombList.iterator();
+        //检查迭代器中是否有下一个炸弹对象
+        while (iterator.hasNext())
+        {
+            //获取下一个炸弹对象
+            Bomb bomb2 = (Bomb) iterator.next();
+            //检查角色是否与炸弹对象发生碰撞
+            if (person.getX() + person.getWidth() > bomb2.getX()
+                && person.getX() < bomb2.getX() + bomb2.getWidth()
+                && person.getY() + person.getHeight() > bomb2.getY()
+                && person.getY() < bomb2.getY() + bomb2.getHeight())
+            {
+                //角色与炸弹发生碰撞，移除炸弹对象
+                iterator.remove();
+                //每次扣除10点血量
+                person.reduceHealth(10);
+                //判断人物是否死亡
+                if (person.isDie())
+                {
+                    GameView.diestory();
+                    new GameOverView(person);
+                }
+
+            }
+            //判断炸弹是否超出屏幕左侧
+            if (bomb2.getX() <= -bomb2.getWidth())
+            {
+                //在控制台打印炸弹清楚
+                System.out.println("炸弹清除");
+                //移除已经引爆的炸弹对象
+                iterator.remove();
+            }
         }
     }
 
