@@ -68,7 +68,7 @@ public class GameMainPanel extends JPanel implements KeyListener
         try
         {
             //创建BackGroundMusic对象，指定我们播放的背景音乐
-            new BackGroundMusic("sound/game.wav");
+            new BackGroundMusic("sound/hjm2.wav");
         }
         catch (Exception e)
         {

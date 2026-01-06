@@ -35,7 +35,7 @@ public class LoginView extends JFrame implements ActionListener
         //===========绘制背景音乐==============
         try
         {
-            BackGroundMusic.playMusic("sound/main.wav");
+            BackGroundMusic.playMusic("sound/hjm1.wav");
         }
         catch (Exception e)
         {
