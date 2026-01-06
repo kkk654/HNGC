@@ -33,10 +33,14 @@ public class LoginView extends JFrame implements ActionListener
     {
         super();
         //===========绘制背景音乐==============
-        BackGroundMusic bgm = new BackGroundMusic("sound/main.wav");
-        bgm.setVolume(0.7f); // 设置音量
-        bgm.loop(); // 循环播放
-
+        try
+        {
+            BackGroundMusic.playMusic("sound/main.wav");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         //==============绘制标签===============
         //邮箱
         emailJLabel = new JLabel();
@@ -55,13 +59,13 @@ public class LoginView extends JFrame implements ActionListener
 
         //==================================绘制输入框========================================
         //设置邮箱输入框参数
-        emailJTextField = new JTextField();
+        emailJTextField = new JTextField("jay@qq.com");
         emailJTextField.setLocation(90,150);
         emailJTextField.setSize(100,20);
         super.add(emailJTextField);
 
         //设置密码输入框参数
-        pwdJPwdField = new JPasswordField();
+        pwdJPwdField = new JPasswordField("123456");
         pwdJPwdField.setLocation(90,200);
         pwdJPwdField.setSize(100,20);
         super.add(pwdJPwdField);
