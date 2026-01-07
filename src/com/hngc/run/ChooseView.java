@@ -1,5 +1,7 @@
 package com.hngc.run;
 
+import com.hngc.util.GamePersistenceUtil;
+
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -119,8 +121,25 @@ public class ChooseView extends JFrame implements MouseListener
         //equals()是字符串比较方法，作用是判断两个字符串值是否一致
         if (e.getSource().equals(continueJLabel))
         {
-            //如果是，弹出一个对话框，提示正在载入
-            JOptionPane.showMessageDialog(null, "无存档数据");
+            try
+            {
+                //判断读取的数据是否存在
+                if (GamePersistenceUtil.getGameData() == null)
+                {
+                    JOptionPane.showMessageDialog(null, "没有存档数据");
+                }
+                else
+                {
+                    this.dispose();
+                    new GameView(true);
+                }
+            }
+            catch (Throwable e1)
+            {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null, "没有存档数据");
+
+            }
         }
 
         //检查触发事件的原组件（看你是否点击了帮助按钮）\
