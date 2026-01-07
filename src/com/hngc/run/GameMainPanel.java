@@ -1,8 +1,10 @@
 package com.hngc.run;
 
+import com.hngc.pojo.ArchiveGameData;
 import com.hngc.pojo.Bomb;
 import com.hngc.pojo.Gold;
 import com.hngc.pojo.Person;
+import com.hngc.util.GamePersistenceUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -59,9 +61,36 @@ public class GameMainPanel extends JPanel implements KeyListener
     //炸弹变大的变量
     int level = 1;
 
+    //游戏存档实体类
+    ArchiveGameData archiveGameData;
+
     //游戏主面板
-    public GameMainPanel()
+    public GameMainPanel(boolean continueGame)
     {
+        //创建游戏存档
+        ArchiveGameData gameData = new ArchiveGameData();
+        //判断用户是否继续游戏
+        if (continueGame)
+        {
+            try
+            {
+                //从文件中读取存档数据
+                gameData = GamePersistenceUtil.getGameData();
+            }
+            catch (Throwable e)
+            {
+                e.printStackTrace();
+            }
+            //如果存档数据不为空，则将数据赋值给游戏角色、金币列表、炸弹列表赋值给对应的属性
+            if (gameData != null)
+            {
+                person = gameData.getPerson();
+                goldList = gameData.getGoldList();
+                bombList = gameData.getBombList();
+            }
+        }
+
+
         //停止当前正在播放的背景音乐
         BackGroundMusic.stopMusic();
 
@@ -80,6 +109,9 @@ public class GameMainPanel extends JPanel implements KeyListener
         try
         {
             backGroundImage = ImageIO.read(new File("image/cc.png"));
+            scoreImage = ImageIO.read(new File("image/a12.png"));
+            //暂停
+            stopImage = ImageIO.read(new File("image/a9.png"));
         }
         catch (IOException e)
         {
@@ -286,20 +318,24 @@ public class GameMainPanel extends JPanel implements KeyListener
             @Override
             public void run()
             {
-                while (true)
+                while (!person.isDie())
                 {
                     try
                     {
                         //首先将当前线程暂停10毫秒
                         Thread.sleep(10);
                         //调用repaint方法，用于刷新图片页面
-                        repaint();
+                        if(!stop)
+                            repaint();
                     }
                     catch (InterruptedException e)
                     {
                         e.printStackTrace();
                     }
+
                 }
+                GameView.diestory();
+                new GameOverView(person);
             }
         };
         //启动新创建的线程
@@ -335,7 +371,6 @@ public class GameMainPanel extends JPanel implements KeyListener
         {
             moveDown = true;
         }
-
         //按下空格暂停游戏
         if (keyCode == KeyEvent.VK_SPACE)
         {
@@ -350,7 +385,7 @@ public class GameMainPanel extends JPanel implements KeyListener
                 moveTimer.start();
             }
             repaint();
-
+            GamePersistenceUtil.save(person, goldList, bombList);
         }
 
     }

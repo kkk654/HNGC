@@ -26,6 +26,9 @@ public class Bomb implements Serializable
     //定义炸弹的生成时间
     private int bombTime;
 
+
+
+
     //get,set方法
 
 

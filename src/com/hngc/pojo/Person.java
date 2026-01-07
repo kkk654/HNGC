@@ -162,6 +162,42 @@ public class Person implements Serializable
         this.personIndex = personIndex;
     }
 
+
+    public void init()
+    {
+        // 尝试加载图像资源，并捕获可能的IOException异常
+        try
+        {
+            // 读取并存储的图像文件到personBufferedImage数组中
+            personBufferedImage = new BufferedImage[]{
+                    // 读取"images/1.png"文件
+                    ImageIO.read(new File("image/1.png")),
+                    // 读取"images/2.png"文件
+                    ImageIO.read(new File("image/2.png")),
+                    // 读取"images/3.png"文件
+                    ImageIO.read(new File("image/3.png")),
+                    // 读取"images/4.png"文件
+                    ImageIO.read(new File("image/4.png")),
+                    // 读取"images/5.png"文件
+                    ImageIO.read(new File("image/5.png")),
+                    // 读取"images/6.png"文件
+                    ImageIO.read(new File("image/6.png")),
+                    // 读取"images/7.png"文件
+                    ImageIO.read(new File("image/7.png")),
+                    // 读取"images/8.png"文件
+                    ImageIO.read(new File("image/8.png")),
+                    // 读取"images/9.png"文件
+                    ImageIO.read(new File("image/9.png"))
+            };
+            // 捕获并处理可能的IOException异常
+        }
+        catch (IOException e)
+        {
+            // 打印异常堆栈跟踪信息
+            e.printStackTrace();
+        }
+    }
+
     public Person()
     {
         //尝试加载图像资源

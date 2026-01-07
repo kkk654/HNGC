@@ -79,7 +79,7 @@ public class LoadingView extends JFrame implements Runnable
                 //关闭加载的当前窗口
                 this.dispose();
                 //创建并启动游戏的页面
-                new GameView();
+                new GameView(false);
             }
         }
 

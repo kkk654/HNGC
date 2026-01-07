@@ -44,14 +44,14 @@ public class LoginView extends JFrame implements ActionListener
         //==============绘制标签===============
         //邮箱
         emailJLabel = new JLabel();
-        emailJLabel.setText("邮  箱: ");
+        emailJLabel.setText("邮   箱: ");
         emailJLabel.setLocation(30,150);
         emailJLabel.setSize(50,20);
         emailJLabel.setForeground(Color.blue);
         super.add(emailJLabel);
         //密码
         pwdJLabel = new JLabel();
-        pwdJLabel.setText("密    码:");
+        pwdJLabel.setText("密   码: ");
         pwdJLabel.setLocation(30,200);
         pwdJLabel.setSize(50,20);
         pwdJLabel.setForeground(Color.blue);
@@ -59,13 +59,13 @@ public class LoginView extends JFrame implements ActionListener
 
         //==================================绘制输入框========================================
         //设置邮箱输入框参数
-        emailJTextField = new JTextField("jay@qq.com");
+        emailJTextField = new JTextField("123");
         emailJTextField.setLocation(90,150);
         emailJTextField.setSize(100,20);
         super.add(emailJTextField);
 
         //设置密码输入框参数
-        pwdJPwdField = new JPasswordField("123456");
+        pwdJPwdField = new JPasswordField("1234");
         pwdJPwdField.setLocation(90,200);
         pwdJPwdField.setSize(100,20);
         super.add(pwdJPwdField);

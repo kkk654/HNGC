@@ -8,13 +8,13 @@ public class GameView extends JFrame
     public static int HEIGHT = 550;
     private static GameView gameView;
 
-    public GameView()
+    public GameView(boolean continueGame)
     {
         // 将当前实例赋值给静态变量gameView
         gameView = this;
 
         //创建GameMainPanel对象
-        GameMainPanel gameMainPanel = new GameMainPanel();
+        GameMainPanel gameMainPanel = new GameMainPanel(continueGame);
         //将主线程加入到窗口中
         add(gameMainPanel);
         //开启游戏的主线程
