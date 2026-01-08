@@ -17,71 +17,123 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
+/**
+ * 游戏主面板类
+ * 继承自JPanel，实现KeyListener接口
+ * 负责游戏的主要逻辑和渲染，包括角色控制、金币和炸弹生成、碰撞检测等
+ */
 public class GameMainPanel extends JPanel implements KeyListener
 {
 
-    //游戏背景
+    /**
+     * 游戏背景图片
+     */
     Image backGroundImage = null;
 
-
-    //图片水平位置变量
+    /**
+     * 背景图片水平位置变量，用于实现背景滚动效果
+     */
     int backIndex = 0;
 
-    //分数显示
+    /**
+     * 分数显示图片
+     */
     Image scoreImage = null;
 
-    //游戏角色
+    /**
+     * 游戏角色对象
+     */
     Person person = new Person();
 
-    //添加按键状态
+    /**
+     * 上移按键状态
+     */
     private boolean moveUp = false;
+
+    /**
+     * 下移按键状态
+     */
     private boolean moveDown = false;
+
+    /**
+     * 左移按键状态
+     */
     private boolean moveLeft = false;
+
+    /**
+     * 右移按键状态
+     */
     private boolean moveRight = false;
-    //用于控制游戏角色移动的定时器
+
+    /**
+     * 用于控制游戏角色移动的定时器
+     */
     private Timer moveTimer;
 
-
-    //暂停游戏图片
+    /**
+     * 暂停游戏图片
+     */
     Image stopImage = null;
 
-    //停止变量
+    /**
+     * 暂停状态变量
+     */
     boolean stop;
+
+    /**
+     * 金币列表，存储当前游戏中的所有金币对象
+     */
     java.util.List<Gold> goldList = new java.util.LinkedList<Gold>();
 
-    //控制游戏金币位置的变量
+    /**
+     * 控制游戏金币位置的变量，用于控制金币生成频率
+     */
     int goldIndex = 0;
 
-    //炸弹列表
+    /**
+     * 炸弹列表，存储当前游戏中的所有炸弹对象
+     */
     java.util.List<Bomb> bombList = new java.util.LinkedList<Bomb>();
 
-    //定义控制炸弹位置的变量
+    /**
+     * 控制炸弹位置的变量，用于控制炸弹生成频率
+     */
     int bombIndex = 0;
 
-    //炸弹变大的变量
+    /**
+     * 游戏难度等级，影响炸弹大小和生成频率
+     */
     int level = 1;
 
-    //游戏存档实体类
+    /**
+     * 游戏存档实体类
+     */
     ArchiveGameData archiveGameData;
 
-    //游戏主面板
+    /**
+     * 构造方法
+     *
+     * @param continueGame 是否继续游戏，true表示继续之前的存档
+     */
     public GameMainPanel(boolean continueGame)
     {
-        //创建游戏存档
+        // 创建游戏存档对象
         ArchiveGameData gameData = new ArchiveGameData();
-        //判断用户是否继续游戏
+
+        // 判断用户是否继续游戏
         if (continueGame)
         {
             try
             {
-                //从文件中读取存档数据
+                // 从文件中读取存档数据
                 gameData = GamePersistenceUtil.getGameData();
             }
             catch (Throwable e)
             {
                 e.printStackTrace();
             }
-            //如果存档数据不为空，则将数据赋值给游戏角色、金币列表、炸弹列表赋值给对应的属性
+
+            // 如果存档数据不为空，则将数据赋值给游戏角色、金币列表、炸弹列表
             if (gameData != null)
             {
                 person = gameData.getPerson();
@@ -90,27 +142,25 @@ public class GameMainPanel extends JPanel implements KeyListener
             }
         }
 
-
-        //停止当前正在播放的背景音乐
+        // 停止当前正在播放的背景音乐
         BackGroundMusic.stopMusic();
 
         try
         {
-            //创建BackGroundMusic对象，指定我们播放的背景音乐
+            // 创建BackGroundMusic对象，指定播放的背景音乐
             new BackGroundMusic("sound/hjm2.wav");
         }
         catch (Exception e)
         {
-            //加载或者初始化音频时发生任何异常（文件不存在，格式不支持）
+            // 加载或者初始化音频时发生任何异常（文件不存在，格式不支持）
             e.printStackTrace();
         }
 
-        //设置背景图片
+        // 设置背景图片
         try
         {
             backGroundImage = ImageIO.read(new File("image/cc.png"));
             scoreImage = ImageIO.read(new File("image/a12.png"));
-            //暂停
             stopImage = ImageIO.read(new File("image/a9.png"));
         }
         catch (IOException e)
@@ -118,13 +168,13 @@ public class GameMainPanel extends JPanel implements KeyListener
             e.printStackTrace();
         }
 
-        //在构造方法中初始化一个定时器
+        // 初始化控制角色移动的定时器
         moveTimer = new Timer(20, new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                //按键按住时移动角色
+                // 根据按键状态移动角色
                 if (moveRight)
                 {
                     person.setX(person.getX() + person.getSpeed());
@@ -142,175 +192,177 @@ public class GameMainPanel extends JPanel implements KeyListener
                     person.setY(person.getY() + person.getSpeed());
                 }
 
-                //重新绘制界面
+                // 重新绘制界面
                 repaint();
             }
         });
-        //启动定时器
+
+        // 启动定时器
         moveTimer.start();
 
-        //注册键盘监听器
+        // 注册键盘监听器
         this.addKeyListener(this);
     }
 
+    /**
+     * 重写paint方法，绘制游戏界面
+     *
+     * @param g 绘图上下文对象
+     */
     @Override
     public void paint(Graphics g)
     {
         super.paint(g);
+
+        // 绘制背景图片
         g.drawImage(backGroundImage, 0, 0, GameView.WIDTH, GameView.HEIGHT, null);
-        //绘制滚动的背景图片的第二部分
-        //确保当第一张图片完全滚动出屏幕左侧时，第二张图片正好填满整个屏幕
+
+        // 绘制滚动的背景图片的第二部分，实现无缝滚动效果
         g.drawImage(backGroundImage, GameView.WIDTH + backIndex, 0, GameView.WIDTH, GameView.HEIGHT, null);
-        //判断图片是否已经超过屏幕左侧
+
+        // 判断图片是否已经完全滚动出屏幕左侧
         if (backIndex == -GameView.WIDTH)
         {
-            //如果是，则将backIndex变量手动设置为0
+            // 如果是，则重置背景位置
             backIndex = 0;
         }
 
-        //绘制分数
+        // 绘制分数显示图片
         g.drawImage(scoreImage, 80, 40, 259, 64, null);
-        //设置颜色为橘色
+
+        // 设置分数文字颜色为橘色
         g.setColor(Color.ORANGE);
-        //设置字体
+
+        // 设置分数文字字体
         g.setFont(new Font("微软雅黑", Font.PLAIN, 15));
-        //绘制文本
+
+        // 绘制当前分数
         g.drawString("您当前的分数 : " + person.getScore(), 140, 80);
 
-        //绘制游戏角色
+        // 更新角色动画帧
         person.step();
 
-        //绘制角色图像
+        // 绘制角色图像
         person.personPaint(g);
 
-        //角色行动方法
+        // 调用角色移动方法
         person.moveUp();
         person.moveDown();
         person.moveLeft();
         person.moveRight();
-        //人物自由落体
+
+        // 角色自由落体效果
         person.low();
 
-        //绘制停止图片
+        // 如果游戏暂停，绘制暂停图片
         if (stop)
         {
             g.drawImage(stopImage, 0, 0, 76, 78, null);
         }
-        //绘制金币
-        //创建金币的实体类
+
+        // 金币相关处理
         Gold gold = new Gold();
-        //判断是否需要添加新的金币到列表中
+
+        // 判断是否需要添加新的金币到列表中
         if (goldIndex++ % gold.getNewGoldTime() == 0)
         {
-            //添加金币对象
             goldList.add(gold);
         }
-        //绘制金币
-        //增强for循环
+
+        // 绘制所有金币并更新位置
         for (Gold gold2 : goldList)
         {
-            //遍历金币列表，调用金币对象的goldPaint方法绘制金币
-            gold2.goldPaint(g);
-            //调用gold对象的step方法，使金币移动
-            gold2.step();
+            gold2.goldPaint(g); // 绘制金币
+            gold2.step(); // 更新金币位置
         }
 
-        //创建列表的迭代器
+        // 创建金币迭代器，用于安全地遍历和修改金币列表
         Iterator<Gold> goldIterator = goldList.iterator();
-        //检查迭代器中是否有下一个金币对象
-        //hasNext方法判断迭代器中是否有下一个元素
+
+        // 遍历所有金币
         while (goldIterator.hasNext())
         {
-            //获取下一个金币对象
-            Gold golds = (Gold) goldIterator.next();
-            //判断角色是否和金币发生碰撞（角色的右边界大于金币的左边界）
-            if (person.getX() + person.getWidth() > golds.getX()
-                //判断左边界是否小于金币的右边界
-                && person.getX() < golds.getX() + golds.getWidth()
-                //检查角色的底部是否高于金币的顶部
-                && person.getY() + person.getHeight() > golds.getY()
-                //检查角色的顶部是否低于金币的底部
-                && person.getY() < golds.getY() + golds.getHeight())
+            Gold golds = goldIterator.next();
+
+            // 碰撞检测：判断角色是否与金币发生碰撞
+            if (person.getX() + person.getWidth() > golds.getX() &&
+                person.getX() < golds.getX() + golds.getWidth() &&
+                person.getY() + person.getHeight() > golds.getY() &&
+                person.getY() < golds.getY() + golds.getHeight())
             {
-                //如果角色与金币发生碰撞，则移除金币对象
-                goldIterator.remove();
-                //增加角色的分数，分数增长的值为当前金币的价格
-                person.setScore(person.getScore() + gold.getGoldPrice());
-                //判断玩家的得分是否是100的倍数
+
+                goldIterator.remove(); // 移除被收集的金币
+                person.setScore(person.getScore() + gold.getGoldPrice()); // 增加角色分数
+
+                // 每100分提升一次游戏难度
                 if (person.getScore() % 100 == 0)
                 {
-                    //提升游戏困难等级
                     level++;
                 }
             }
-            //判断金币是否超出屏幕左侧范围
+
+            // 判断金币是否超出屏幕左侧范围
             if (golds.getX() <= -golds.getWidth())
             {
-                //如果金币超出范围，打印金币移除信息
-                System.out.println("清理金币" + golds);
-                //移除金币对象
-                goldIterator.remove();
+                System.out.println("清理金币" + golds); // 打印清理信息
+                goldIterator.remove(); // 移除超出范围的金币
             }
         }
 
+        // 炸弹相关处理
+        Bomb bomb = new Bomb(level); // 根据当前难度创建炸弹
 
-        //绘制炸弹
-        //创建炸弹的实体类
-        Bomb bomb = new Bomb(level);
-        //判断bombIndex是否满足创建新炸弹的条件
-        //如果说bombIndex递增后和爆炸事件取余为0，表示创建炸弹
+        // 判断是否需要添加新的炸弹到列表中
         if (bombIndex++ % bomb.getBombTime() == 0)
         {
-            //将新的炸弹对象添加到炸弹列表中
             bombList.add(bomb);
         }
-        //遍历炸弹列表中每一个炸弹
-        //增强for循环
+
+        // 绘制所有炸弹并更新位置
         for (Bomb bomb2 : bombList)
         {
-            //调用bombRepaint方法，将炸弹绘制到窗口中
-            bomb2.bombRepaint(g);
-            //调用step方法，更新炸弹位置
-            bomb2.step();
+            bomb2.bombRepaint(g); // 绘制炸弹
+            bomb2.step(); // 更新炸弹位置
         }
 
-        //创建炸弹的迭代器
+        // 创建炸弹迭代器，用于安全地遍历和修改炸弹列表
         Iterator<Bomb> iterator = bombList.iterator();
-        //检查迭代器中是否有下一个炸弹对象
+
+        // 遍历所有炸弹
         while (iterator.hasNext())
         {
-            //获取下一个炸弹对象
-            Bomb bomb2 = (Bomb) iterator.next();
-            //检查角色是否与炸弹对象发生碰撞
-            if (person.getX() + person.getWidth() > bomb2.getX()
-                && person.getX() < bomb2.getX() + bomb2.getWidth()
-                && person.getY() + person.getHeight() > bomb2.getY()
-                && person.getY() < bomb2.getY() + bomb2.getHeight())
+            Bomb bomb2 = iterator.next();
+
+            // 碰撞检测：判断角色是否与炸弹发生碰撞
+            if (person.getX() + person.getWidth() > bomb2.getX() &&
+                person.getX() < bomb2.getX() + bomb2.getWidth() &&
+                person.getY() + person.getHeight() > bomb2.getY() &&
+                person.getY() < bomb2.getY() + bomb2.getHeight())
             {
-                //角色与炸弹发生碰撞，移除炸弹对象
-                iterator.remove();
-                //每次扣除10点血量
-                person.reduceHealth(10);
-                //判断人物是否死亡
+
+                iterator.remove(); // 移除碰撞的炸弹
+                person.reduceHealth(10); // 角色扣血
+
+                // 判断角色是否死亡
                 if (person.isDie())
                 {
-                    GameView.diestory();
-                    new GameOverView(person);
+                    GameView.diestory(); // 销毁游戏视图
+                    new GameOverView(person); // 创建游戏结束视图
                 }
-
             }
-            //判断炸弹是否超出屏幕左侧
+
+            // 判断炸弹是否超出屏幕左侧
             if (bomb2.getX() <= -bomb2.getWidth())
             {
-                //在控制台打印炸弹清楚
-                System.out.println("炸弹清除");
-                //移除已经引爆的炸弹对象
-                iterator.remove();
+                System.out.println("炸弹清除"); // 打印清理信息
+                iterator.remove(); // 移除超出范围的炸弹
             }
         }
     }
 
-    //控制游戏画面的帧率，实现动画效果
+    /**
+     * 控制游戏画面的帧率，实现动画效果
+     */
     public void action()
     {
         Thread thread = new Thread()
@@ -318,43 +370,53 @@ public class GameMainPanel extends JPanel implements KeyListener
             @Override
             public void run()
             {
+                // 游戏主循环，直到角色死亡
                 while (!person.isDie())
                 {
                     try
                     {
-                        //首先将当前线程暂停10毫秒
-                        Thread.sleep(10);
-                        //调用repaint方法，用于刷新图片页面
-                        if(!stop)
+                        Thread.sleep(10); // 控制帧率
+
+                        // 如果游戏未暂停，则刷新画面
+                        if (!stop)
+                        {
                             repaint();
+                        }
                     }
                     catch (InterruptedException e)
                     {
                         e.printStackTrace();
                     }
-
                 }
+
+                // 游戏结束处理
                 GameView.diestory();
                 new GameOverView(person);
             }
         };
-        //启动新创建的线程
+
+        // 启动游戏线程
         thread.start();
     }
 
     @Override
     public void keyTyped(KeyEvent e)
     {
-
+        // 未实现此方法
     }
 
+    /**
+     * 键盘按键按下事件处理
+     *
+     * @param e 键盘事件对象
+     */
     @Override
     public void keyPressed(KeyEvent e)
     {
-
-        //获取按键的键码
+        // 获取按键的键码
         int keyCode = e.getKeyCode();
-        //根据不同按键设置相应的移动状态
+
+        // 根据不同按键设置相应的移动状态
         if (keyCode == KeyEvent.VK_D)
         {
             moveRight = true;
@@ -371,31 +433,39 @@ public class GameMainPanel extends JPanel implements KeyListener
         {
             moveDown = true;
         }
-        //按下空格暂停游戏
+
+        // 按下空格键暂停/继续游戏
         if (keyCode == KeyEvent.VK_SPACE)
         {
-            stop = !stop;
+            stop = !stop; // 切换暂停状态
+
+            // 根据暂停状态控制移动定时器
             if (stop)
             {
-                //停止定时器
-                moveTimer.stop();
+                moveTimer.stop(); // 停止定时器
             }
             else
             {
-                moveTimer.start();
+                moveTimer.start(); // 启动定时器
             }
-            repaint();
-            GamePersistenceUtil.save(person, goldList, bombList);
-        }
 
+            repaint(); // 刷新画面
+            GamePersistenceUtil.save(person, goldList, bombList); // 保存游戏进度
+        }
     }
 
+    /**
+     * 键盘按键释放事件处理
+     *
+     * @param e 键盘事件对象
+     */
     @Override
     public void keyReleased(KeyEvent e)
     {
-        //获取按键的键码
+        // 获取按键的键码
         int keyCode = e.getKeyCode();
-        //根据不同按键设置相应的移动状态
+
+        // 根据不同按键设置相应的移动状态
         if (keyCode == KeyEvent.VK_D)
         {
             moveRight = false;
@@ -412,6 +482,5 @@ public class GameMainPanel extends JPanel implements KeyListener
         {
             moveDown = false;
         }
-
     }
 }

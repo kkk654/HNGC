@@ -4,19 +4,43 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * 背景音乐播放类
+ * 用于控制游戏中的背景音乐播放、停止、循环等操作
+ */
 public class BackGroundMusic
 {
-    private static Clip clip; // Use Clip class to play audio 
-    private static long audioTotalMicroseconds = 0; // Audio total length (microseconds) 
-    private static int loopCount = 0; // Loop count 
 
+    /**
+     * 用于播放音频的Clip对象
+     */
+    private static Clip clip;
 
+    /**
+     * 音频总长度（微秒）
+     */
+    private static long audioTotalMicroseconds = 0;
+
+    /**
+     * 循环次数
+     */
+    private static int loopCount = 0;
+
+    /**
+     * 构造方法
+     *
+     * @param s 音频文件路径
+     */
     public BackGroundMusic(String s)
     {
         playMusic(s);
     }
 
-
+    /**
+     * 播放背景音乐
+     *
+     * @param resourceName 音频文件路径
+     */
     public static void playMusic(String resourceName)
     {
         try
@@ -36,12 +60,12 @@ public class BackGroundMusic
             // 打开音频输入流
             clip.open(audioStream);
 
-            // Get audio total length (microseconds) 
+            // 获取音频总长度（微秒）
             audioTotalMicroseconds = clip.getMicrosecondLength();
             loopCount = 0;
 
-            clip.start(); // Start playing 
-            clip.loop(Clip.LOOP_CONTINUOUSLY); // Loop playback 
+            clip.start(); // 开始播放
+            clip.loop(Clip.LOOP_CONTINUOUSLY); // 循环播放
         }
         catch (Exception e)
         {
@@ -50,21 +74,26 @@ public class BackGroundMusic
         }
     }
 
-
+    /**
+     * 停止背景音乐播放
+     */
     public static void stopMusic()
     {
         if (clip != null && clip.isRunning())
         {
             clip.stop();
-            clip.close(); // Release system resources 
+            clip.close(); // 释放系统资源
             clip = null;
             audioTotalMicroseconds = 0;
             loopCount = 0;
         }
     }
 
-
-    // Get current playback position (seconds) 
+    /**
+     * 获取当前播放位置（秒）
+     *
+     * @return 当前播放位置（秒）
+     */
     public static double getCurrentPosition()
     {
         if (clip != null && clip.isRunning())
@@ -74,8 +103,11 @@ public class BackGroundMusic
         return 0.0;
     }
 
-
-    // Get audio total length (seconds) 
+    /**
+     * 获取音频总长度（秒）
+     *
+     * @return 音频总长度（秒）
+     */
     public static double getTotalDuration()
     {
         if (audioTotalMicroseconds > 0)
@@ -85,9 +117,12 @@ public class BackGroundMusic
         return 0.0;
     }
 
-
-    // Get remaining time (for loop playback, this value changes continuously) 
-    // Note: For infinitely looping audio, remaining time represents remaining time in current loop 
+    /**
+     * 获取剩余播放时间（秒）
+     * 注意：对于无限循环的音频，剩余时间表示当前循环的剩余时间
+     *
+     * @return 剩余播放时间（秒）
+     */
     public static double getRemainingTime()
     {
         if (clip != null && clip.isRunning() && audioTotalMicroseconds > 0)
@@ -98,8 +133,11 @@ public class BackGroundMusic
         return 0.0;
     }
 
-
-    // Get current loop count 
+    /**
+     * 获取当前循环次数
+     *
+     * @return 当前循环次数
+     */
     public static int getLoopCount()
     {
         if (clip != null && clip.isRunning() && audioTotalMicroseconds > 0)
@@ -110,8 +148,11 @@ public class BackGroundMusic
         return 0;
     }
 
-
-    // Get playback status information 
+    /**
+     * 获取播放状态信息
+     *
+     * @return 播放状态信息字符串
+     */
     public static String getStatusInfo()
     {
         if (clip == null)
@@ -131,11 +172,13 @@ public class BackGroundMusic
         return String.format("Current time: %.2fs / %.2fs, Loop count: %d", current, total, loop);
     }
 
-
-    // Check if currently playing 
+    /**
+     * 检查是否正在播放音乐
+     *
+     * @return 是否正在播放
+     */
     public static boolean isPlaying()
     {
         return clip != null && clip.isRunning();
     }
-
 }

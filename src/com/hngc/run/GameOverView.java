@@ -7,92 +7,91 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * 游戏结束视图类
+ * 继承自JFrame，实现ActionListener接口
+ * 用于显示游戏结束界面，包括最终得分、再来一次和退出游戏选项
+ */
 public class GameOverView extends JFrame implements ActionListener
 {
 
-    //展示分数
+    /**
+     * 用于展示最终分数的标签
+     */
     JLabel scoreLabel = null;
-    //再来一次按钮
+
+    /**
+     * "再来一次"按钮，用于重新开始游戏
+     */
     JButton againButton = null;
-    //退出游戏按钮
+
+    /**
+     * "退出游戏"按钮，用于退出程序
+     */
     JButton exitButton = null;
 
-
+    /**
+     * 构造方法
+     *
+     * @param person 游戏角色对象，用于获取最终得分
+     */
     public GameOverView(Person person)
     {
-
-        //展示分数
-        //创建JLabel对象来展示得分
+        // 初始化分数标签
         scoreLabel = new JLabel();
-        //设置文本
-        scoreLabel.setText("本次获得的金币分数为：\t" + person.getScore());
-        //设置标签颜色为橘色
-        scoreLabel.setForeground(Color.ORANGE);
-        //设置标签大小
-        scoreLabel.setSize(200, 20);
-        //设置标签位置
-        scoreLabel.setLocation(120, 30);
-        //将标签添加到窗口中
-        add(scoreLabel);
+        scoreLabel.setText("本次获得的金币分数为：\t" + person.getScore()); // 设置显示文本
+        scoreLabel.setForeground(Color.ORANGE); // 设置文本颜色为橘色
+        scoreLabel.setSize(200, 20); // 设置标签大小
+        scoreLabel.setLocation(120, 30); // 设置标签位置
+        add(scoreLabel); // 将标签添加到窗口
 
-
-        //再来一次按钮
-        //创建JButton对象
+        // 初始化"再来一次"按钮
         againButton = new JButton("再来一次");
-        //设置按钮大小
-        againButton.setSize(100, 20);
-        //设置按钮位置
-        againButton.setLocation(80, 150);
-        //为按钮添加事件的监听器
-        againButton.addActionListener(this);
-        //加入窗口中
-        add(againButton);
+        againButton.setSize(100, 20); // 设置按钮大小
+        againButton.setLocation(80, 150); // 设置按钮位置
+        againButton.addActionListener(this); // 添加事件监听器
+        add(againButton); // 将按钮添加到窗口
 
-        //退出按钮
+        // 初始化"退出游戏"按钮
         exitButton = new JButton("退出游戏");
-        exitButton.setSize(100, 20);
-        exitButton.setLocation(240, 150);
-        exitButton.addActionListener(this);
-        add(exitButton);
+        exitButton.setSize(100, 20); // 设置按钮大小
+        exitButton.setLocation(240, 150); // 设置按钮位置
+        exitButton.addActionListener(this); // 添加事件监听器
+        add(exitButton); // 将按钮添加到窗口
 
-
-        //创建人物死亡的背景图片
+        // 创建并设置背景图片
         BackGroundImage backGroundImage = new BackGroundImage("image/pp.png");
-        //设置背景图片的大小
-        backGroundImage.setSize(393, 208);
-        //将背景图片添加到窗口中
-        this.add(backGroundImage);
-        //设置窗口大小
-        this.setSize(393, 208);
-        //设置窗口位置
-        this.setLocation(750, 300);
-        //设置窗口为无边窗口
-        this.setUndecorated(true);
-        //设置窗口可见
-        this.setVisible(true);
+        backGroundImage.setSize(393, 208); // 设置背景图片大小
+        this.add(backGroundImage); // 将背景图片添加到窗口
 
+        // 设置窗口属性
+        this.setSize(393, 208); // 设置窗口大小
+        this.setLocation(750, 300); // 设置窗口位置
+        this.setUndecorated(true); // 设置窗口为无边框窗口
+        this.setVisible(true); // 设置窗口可见
     }
 
+    /**
+     * 按钮点击事件处理方法
+     *
+     * @param e 事件对象
+     */
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        //检查事件源是否是“再来一次按钮”
+        // 处理"再来一次"按钮点击事件
         if (e.getSource().equals(againButton))
         {
-            //隐藏当前游戏结束窗口
-            this.setVisible(false);
-            //释放当前窗口
-            this.dispose();
-            //创建新的线程来启动游戏界面
-            Thread thread = new Thread(new LoadingView());
-            //启动线程
-            thread.start();
-        }
-        //检查事件源是否是“退出游戏按钮”
-        if (e.getSource().equals(exitButton))
-        {
-            System.exit(0);
+            this.setVisible(false); // 隐藏当前窗口
+            this.dispose(); // 释放窗口资源
+            Thread thread = new Thread(new LoadingView()); // 创建加载窗口线程
+            thread.start(); // 启动线程，重新开始游戏
         }
 
+        // 处理"退出游戏"按钮点击事件
+        if (e.getSource().equals(exitButton))
+        {
+            System.exit(0); // 退出程序
+        }
     }
 }
